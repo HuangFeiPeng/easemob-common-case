@@ -3426,6 +3426,11 @@ duplexify@^3.4.2, duplexify@^3.6.0:
     readable-stream "^2.0.0"
     stream-shift "^1.0.0"
 
+easemob-websdk@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/easemob-websdk/-/easemob-websdk-4.0.0.tgz#fd8de7f86373b1263ff6f005bf682035449d84d7"
+  integrity sha512-UXcaS65VRpvP/j0AC1VKE+rXjpZKPCHLmGW8L5HqSOO7HRYMl4ujmaQ3mdLj1Odw/a9LZnh/ZM3j/8iQw5Xwxg==
+
 easy-stack@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/easy-stack/-/easy-stack-1.0.1.tgz#8afe4264626988cabb11f3c704ccd0c835411066"
@@ -5967,6 +5972,11 @@ npm-run-path@^4.0.0:
     console-control-strings "~1.1.0"
     gauge "~2.7.3"
     set-blocking "~2.0.0"
+
+nprogress@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/nprogress/-/nprogress-0.2.0.tgz#cb8f34c53213d895723fcbab907e9422adbcafb1"
+  integrity sha1-y480xTIT2JVyP8urkH6UIq28r7E=
 
 nth-check@^1.0.2:
   version "1.0.2"
