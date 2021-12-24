@@ -10,7 +10,7 @@ import "nprogress/nprogress.css";
 export default {
   data() {
     return {
-      username: "hfp",
+      username: "pfh",
       password: "1",
     };
   },
@@ -29,14 +29,17 @@ export default {
           NProgress.done();
           this.initUserData();
         }, //连接成功回调
-        onClosed: function () {}, //连接关闭回调
-        onTextMessage: function (message) {}, //收到文本消息
-        onEmojiMessage: function (message) {}, //收到表情消息
-        onPictureMessage: function (message) {}, //收到图片消息
-        onCmdMessage: function (message) {}, //收到命令消息
-        onAudioMessage: function (message) {}, //收到音频消息
-        onLocationMessage: function (message) {}, //收到位置消息
-        onFileMessage: function (message) {}, //收到文件消息
+        onClosed: () => {}, //连接关闭回调
+        onTextMessage: (message) => {
+          console.log("收到文本消息", message);
+          this.sendReadAck(message);
+        }, //收到文本消息
+        onEmojiMessage: (msg) => {}, //收到表情消息
+        onPictureMessage: (msg) => {}, //收到图片消息
+        onCmdMessage: (msg) => {}, //收到命令消息
+        onAudioMessage: (msg) => {}, //收到音频消息
+        onLocationMessage: (msg) => {}, //收到位置消息
+        onFileMessage: (msg) => {}, //收到文件消息
         onVideoMessage: function (message) {
           var node = document.getElementById("privateVideo");
           var option = {
@@ -57,24 +60,28 @@ export default {
           };
           WebIM.utils.download.call(conn, option);
         }, //收到视频消息
-        onPresence: function (message) {}, //处理“广播”或“发布-订阅”消息，如联系人订阅请求、处理群组、聊天室被踢解散等消息
-        onRoster: function (message) {}, //处理好友申请
-        onInviteMessage: function (message) {}, //处理群组邀请
-        onOnline: function () {}, //本机网络连接成功
-        onOffline: function () {}, //本机网络掉线
-        onError: function (message) {}, //失败回调
+        onPresence: (msg) => {}, //处理“广播”或“发布-订阅”消息，如联系人订阅请求、处理群组、聊天室被踢解散等消息
+        onRoster: (msg) => {}, //处理好友申请
+        onInviteMessage: (msg) => {}, //处理群组邀请
+        onOnline: () => {}, //本机网络连接成功
+        onOffline: () => {}, //本机网络掉线
+        onError: function (message) {
+          console.log("+++++error", message);
+        }, //失败回调
         onBlacklistUpdate: function (list) {
           //黑名单变动
           // 查询黑名单，将好友拉黑，将好友从黑名单移除都会回调这个函数，list则是黑名单现有的所有好友信息
           console.log(list);
         },
-        onRecallMessage: function (message) {}, //收到撤回消息回调
-        onReceivedMessage: function (message) {}, //收到消息送达服务器回执
-        onDeliveredMessage: function (message) {}, //收到消息送达客户端回执
-        onReadMessage: function (message) {}, //收到消息已读回执
-        onCreateGroup: function (message) {}, //创建群组成功回执（需调用createGroupNew）
-        onMutedMessage: function (message) {}, //如果用户在A群组被禁言，在A群发消息会走这个回调并且消息不会传递给群其它成员
-        onChannelMessage: function (message) {}, //收到整个会话已读的回执，在对方发送channel ack时会在这个回调里收到消息
+        onRecallMessage: (msg) => {}, //收到撤回消息回调
+        onReceivedMessage: (msg) => {}, //收到消息送达服务器回执
+        onDeliveredMessage: (msg) => {}, //收到消息送达客户端回执
+        onReadMessage: function (message) {
+          console.log("收到消息已读回执", message);
+        }, //收到消息已读回执
+        onCreateGroup: (msg) => {}, //创建群组成功回执（需调用createGroupNew）
+        onMutedMessage: (msg) => {}, //如果用户在A群组被禁言，在A群发消息会走这个回调并且消息不会传递给群其它成员
+        onChannelMessage: (msg) => {}, //收到整个会话已读的回执，在对方发送channel ack时会在这个回调里收到消息
       });
     },
     /* ------------- 环信登陆方法（账号已写死） ------------ */
@@ -106,7 +113,18 @@ export default {
       } catch (error) {}
 
       //拉取会话列表
+      this.getSessionList();
       //获取会话列表中存在的用户属性
+    },
+    /* ----------------发送已读回执--------------- */
+    sendReadAck(message) {
+      const { id: bodyId, from } = message;
+      let msg = new WebIM.message("read", WebIM.conn.getUniqueId());
+      msg.set({
+        id: bodyId,
+        to: from,
+      });
+      WebIM.conn.send(msg.body);
     },
   },
 };

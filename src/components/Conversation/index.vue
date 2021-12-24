@@ -10,7 +10,7 @@
       </a-col>
       <a-col :span="24">
         <div>
-          <a-list :data-source="data" split bordered>
+          <a-list :data-source="conversationList" split bordered>
             <a-list-item
               :class="[
                 'conversation-list-item',
@@ -19,14 +19,14 @@
               slot="renderItem"
               slot-scope="item, index"
             >
-              <a-list-item-meta :description="item.email" @click="idx = index">
-                <a slot="title">{{ "刘某某" + index }}</a>
-                <a-avatar
-                  slot="avatar"
-                  src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
-                />
+              <a-list-item-meta
+                :description="`${item.from}-${item.content.msg}`"
+                @click="idx = index"
+              >
+                <a slot="title">{{ handleCard(item).nickname }}</a>
+                <a-avatar slot="avatar" :src="handleCard(item).avatarurl" />
               </a-list-item-meta>
-              <div>Content</div>
+              <a-badge :count="item.unread_num" :overflow-count="99" />
             </a-list-item>
           </a-list>
         </div>
@@ -35,45 +35,41 @@
   </a-layout-sider>
 </template>
 <script>
+import { mapGetters } from "vuex";
 export default {
   data() {
     return {
-      data: [
-        {
-          gender: "male",
-          name: {
-            title: "Mr",
-            first: "Fletcher",
-            last: "Cooper",
-          },
-          email: "fletcher.cooper@example.com",
-          nat: "NZ",
-        },
-        {
-          gender: "male",
-          name: {
-            title: "Mr",
-            first: "Fletcher",
-            last: "Cooper",
-          },
-          email: "fletcher.cooper@example.com",
-          nat: "NZ",
-        },
-        {
-          gender: "male",
-          name: {
-            title: "Mr",
-            first: "Fletcher",
-            last: "Cooper",
-          },
-          email: "fletcher.cooper@example.com",
-          nat: "NZ",
-        },
-      ],
+      avatarurl:
+        "https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png",
+
       idx: 0,
       loading: false,
       busy: false,
     };
+  },
+  computed: {
+    ...mapGetters(["conversationList"]),
+    handleCard() {
+      return (item) => {
+        if (item.chatType === "singleChat" && item.userInfo) {
+          let obj = {
+            nickname:
+              (item.userInfo.nickname && item.userInfo.nickname) ||
+              item.channelId,
+            avatarurl:
+              (item.userInfo.avatarurl && item.userInfo.avatarurl) ||
+              this.avatarurl,
+          };
+          return obj;
+        }
+        if (item.chatType === "groupChat") {
+          let obj = {
+            nickname: `群组${item.channelId}`,
+          };
+          return obj;
+        }
+      };
+    },
   },
   methods: {
     onSearch() {

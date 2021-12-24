@@ -4,6 +4,7 @@ const config = {
   restServer: '//a1.easemob.com', // rest Server地址
 
   appkey: 'easemob-demo#easeim', // App key
+  // appkey: 'easemob-demo#shouqian', // App key
 
   https: false, // 是否使用https
 
@@ -21,7 +22,7 @@ const config = {
 
   useOwnUploadFun: false, // 是否使用自己的上传方式（如将图片文件等上传到自己的服务器，构建消息时只传url）
 
-  deviceId: 'webim' // 设备ID，默认可不传，如果传一个固定值，在没开启多端登录的情况下同一个账号会互踢
-}
+  deviceId: 'webim', // 设备ID，默认可不传，如果传一个固定值，在没开启多端登录的情况下同一个账号会互踢
+};
 
-export default config
+export default config;

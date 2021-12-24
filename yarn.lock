@@ -3426,10 +3426,10 @@ duplexify@^3.4.2, duplexify@^3.6.0:
     readable-stream "^2.0.0"
     stream-shift "^1.0.0"
 
-easemob-websdk@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/easemob-websdk/-/easemob-websdk-4.0.0.tgz#fd8de7f86373b1263ff6f005bf682035449d84d7"
-  integrity sha512-UXcaS65VRpvP/j0AC1VKE+rXjpZKPCHLmGW8L5HqSOO7HRYMl4ujmaQ3mdLj1Odw/a9LZnh/ZM3j/8iQw5Xwxg==
+easemob-websdk@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/easemob-websdk/-/easemob-websdk-4.0.1.tgz#a23c13a002ed08369d60d0847d7940e2b83cf1e7"
+  integrity sha512-9CaALqdii6OrTMm8Hc97On5lJCHQFhIU0wTavDESB/Hh3zDRH4kYdKzUnoG+6c1O4/UCbVbeD/h/zOjzDNShoQ==
 
 easy-stack@^1.0.1:
   version "1.0.1"

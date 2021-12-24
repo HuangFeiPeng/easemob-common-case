@@ -3,13 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve --open",
+    "dev": "vue-cli-service serve --open",
     "build": "vue-cli-service build"
   },
   "dependencies": {
     "ant-design-vue": "^1.7.8",
     "core-js": "^3.6.5",
-    "easemob-websdk": "^4.0.0",
+    "easemob-websdk": "^4.0.1",
     "nprogress": "^0.2.0",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
