@@ -1,5 +1,5 @@
 <template>
-  <div>消息列表展示</div>
+  <div class="app-container">消息列表部分</div>
 </template>
 <script>
 export default {

@@ -67,7 +67,9 @@
         <a-layout-content class="layout-content">
           <Message />
         </a-layout-content>
-        <a-layout-footer class="layout-footer">Footer</a-layout-footer>
+        <a-layout-footer class="layout-footer">
+          <InputBar />
+        </a-layout-footer>
       </a-layout>
     </a-layout>
   </div>
@@ -78,6 +80,7 @@ import { mapGetters } from "vuex";
 import UserInfoCard from "@/components/UserInfoCard";
 import Conversation from "@/components/Conversation";
 import Message from "@/components/Message";
+import InputBar from "@/components/InputBar";
 import "./Chat.less";
 export default {
   name: "Chat",
@@ -85,6 +88,7 @@ export default {
     UserInfoCard,
     Conversation,
     Message,
+    InputBar,
   },
   data() {
     return {
