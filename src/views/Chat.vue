@@ -48,7 +48,21 @@
       <Conversation />
       <a-layout class="layout-message-container">
         <a-layout-header class="layout-header">
-          <span class="iconfont .icon-qunzuduoren" style="color: red"></span>
+          <span class="iconfont .icon-qunzuduoren pickId">
+            {{ handleId }}
+            <sup v-if="selectedObject"
+              ><span
+                class="iconfont"
+                :class="[
+                  selectedObject.chatType === 'groupChat'
+                    ? 'icon-qunzuduoren'
+                    : selectedObject.chatType === 'singleChat'
+                    ? 'icon-haoyou'
+                    : 'icon-qunzuduoren',
+                ]"
+              ></span
+            ></sup>
+          </span>
         </a-layout-header>
         <a-layout-content class="layout-content">
           <Message />
@@ -85,7 +99,19 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["loginUserInfo"]),
+    ...mapGetters(["loginUserInfo", "selectedObject"]),
+    handleId() {
+      const { chatType, userInfo, channelId } = this.selectedObject || {};
+      console.log(chatType);
+      if (chatType === "groupChat") {
+        return channelId;
+      }
+      if (chatType === "singleChat" && userInfo.nickname) {
+        return userInfo.nickname;
+      } else {
+        return channelId;
+      }
+    },
   },
 };
 </script>

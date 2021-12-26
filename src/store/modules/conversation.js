@@ -14,7 +14,6 @@ const Conversation = {
       let {
         data: { channel_infos },
       } = await WebIM.conn.getSessionList();
-      console.log('++++====', channel_infos);
       let conversationList = {};
       let userIdList = [];
       channel_infos.length > 0 &&
@@ -58,7 +57,6 @@ const Conversation = {
         conversationList[key].userInfo = { ...res[key] };
       }
       commit('INIT_CONVERSATION_LIST', conversationList);
-      // console.log('conversationList', conversationList);
       /**
         返回参数说明
         channel_infos - 所有会话
@@ -96,7 +94,6 @@ const Conversation = {
     },
     /* --------------------拉取会话用户属性--------------------- */
     getChannelUserInfo: async ({ commit }, params) => {
-      console.log('>>>>执行拉取会话用户属性', params);
       let { data } = await WebIM.conn.fetchUserInfoById([...params]);
       return Promise.resolve(data);
     },
