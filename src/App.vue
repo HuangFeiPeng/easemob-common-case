@@ -19,7 +19,7 @@ export default {
     this.login();
   },
   methods: {
-    ...mapActions(["getUserInfo", "getSessionList"]),
+    ...mapActions(["getUserInfo", "getSessionList", "getToDoUpdateLastMsg"]),
     /* ------------- 环信初始化监听回调（该步骤必须优先挂载） ------------ */
     initEasemobListen() {
       const conn = WebIM.conn;

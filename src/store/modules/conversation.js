@@ -1,29 +1,86 @@
+import {
+  data
+} from '@/mock/conversation'
 const Conversation = {
   state: {
-    conversation: [],
+    conversation: {},
   },
   mutations: {
     INIT_CONVERSATION_LIST: (state, list) => {
-      state.conversation = Object.values(list);
+
+      state.conversation = list;
+    },
+    UPDATE_CONVERSATION_LIST: (state, payload) => {
+      const conversation = Object.assign({}, state.conversation);
+      const {
+        key,
+        msgBody,
+        msgBody: {
+          from,
+          id,
+          isBeself,
+          time,
+          to,
+          content,
+          ext
+        },
+      } = payload;
+      if (msgBody.isBeself) {
+        let converTarget = Object.assign({}, conversation[key]);
+        for (const key in converTarget) {
+          console.log(key);
+        }
+
+        console.log('>>>>取到对应的key', conversation[key]);
+      } else {}
+    },
+    SET_GROUPINFO: (state, data) => {
+      let conversation = Object.assign({}, state.conversation);
+      let {
+        id
+      } = data;
+      conversation[id].groupInfo = data;
+      state.conversation = conversation;
+
     },
   },
   actions: {
     /* ------执行拉取会话列表数据【如获取为空则使用mock数据】------ */
-    getSessionList: async ({ dispatch, commit }, params) => {
+    getSessionList: async ({
+      dispatch,
+      commit
+    }, params) => {
+      console.log('data', data);
       const regexp = /.*@easemob.com$/;
-      let {
-        data: { channel_infos },
-      } = await WebIM.conn.getSessionList();
+      const {
+        data: {
+          channel_infos
+        }
+      } = data; //从mock中取
+      console.log('channel_infos: ', channel_infos);
+      /* 注释部分为从接口调用取会话的方法 */
+      // let {
+      //   data: {
+      //     channel_infos
+      //   },
+      // } = await WebIM.conn.getSessionList(); //取出会话列表channel_infos
+
       let conversationList = {};
       let userIdList = [];
+      let groupIdList = [];
+      //遍历会话列表
       channel_infos.length > 0 &&
-        channel_infos.map((item) => {
+        channel_infos.map(async (item) => {
           const {
             unread_num,
             channel_id,
-            meta: { id, timestamp, payload },
-          } = item;
-          let msgBody = Object.assign({}, JSON.parse(payload));
+            meta: {
+              id,
+              timestamp,
+              payload
+            },
+          } = item; //取出会话数据
+          let msgBody = Object.assign({}, JSON.parse(payload)); //转换payload数据
           let conversationObj = {
             id,
             timestamp,
@@ -32,70 +89,75 @@ const Conversation = {
             to: msgBody.to,
             ext: msgBody.ext,
             content: msgBody.bodies[0],
-          };
-
+          }; //重组会话数据结构
           let chatType =
             (regexp.test(channel_id) && 'singleChat') || 'groupChat'; //判断是单聊会话还是群组或聊天室会话
           let channelId =
             WebIM.conn.user &&
             WebIM.conn.user === msgBody.from &&
-            chatType === 'singleChat'
-              ? msgBody.to
-              : chatType === 'groupChat'
-              ? msgBody.to
-              : msgBody.from; //取相应的 会话id
+            chatType === 'singleChat' ?
+            msgBody.to :
+            chatType === 'groupChat' ?
+            msgBody.to :
+            msgBody.from; //取相应的 会话id 主要差异在于取单聊或者群组的差异 单聊取from 或to 群组则只取to
 
           if (chatType === 'singleChat') {
+            //如果类型为单聊则放入userIdList 等待取其对应的用户属性
             userIdList = [...userIdList, channelId];
           }
-          conversationObj.channelId = channelId;
-          conversationObj.chatType = chatType;
-          return (conversationList[channelId] = conversationObj || {});
+          if (chatType === 'groupChat') {
+            groupIdList = [...groupIdList, channelId];
+          }
+          conversationObj.channelId = channelId; //conversationObj中追加 channelId
+          conversationObj.chatType = chatType; //conversationObj中追加 会话类型
+          return (conversationList[channelId] = conversationObj || {}); //conversationList中以channelId 为key 加上对应的conversationObj
         });
-      let res = await dispatch('getChannelUserInfo', userIdList);
+      let res = await dispatch('getChannelUserInfo', userIdList); //执行取对应的用户属性
       for (const key in res) {
-        conversationList[key].userInfo = { ...res[key] };
+        conversationList[key].userInfo = {
+          ...res[key]
+        };
       }
+      if (groupIdList.length != 0) dispatch('getGroupInfo', {
+        groupIdList
+      });
       commit('INIT_CONVERSATION_LIST', conversationList);
-      /**
-        返回参数说明
-        channel_infos - 所有会话
-        channel_id - 会话id, username@easemob.com表示单聊，groupid@conference.easemob.com表示群聊
-        meta - 最后一条消息
-            from - last msg的from来源
-            id - 该消息的servermsgid
-            payload - 该消息的完整体
-            timestamp - last msg 时间戳
-            to -该消息去向
-        unread_num - 当前会话的未读消息数
-        
-        data{
-            channel_infos:[
-                {
-                    channel_id: 'easemob-demo#chatdemoui_username@easemob.com',
-                    meta: {},
-                    unread_num: 0
-                },
-                {
-                    channel_id: 'easemob-demo#chatdemoui_93734273351681@conference.easemob.com',
-                    meta: {
-                        from: "easemob-demo#chatdemoui_zdtest@easemob.com/webim_1610159114836",
-                        id: "827197124377577640",
-                        payload: "{"bodies":[{"msg":"1","type":"txt"}],"ext":{},"from":"zdtest","to":"93734273351681"}",
-                        timestamp: 1610161638919,
-                        to: "easemob-demo#chatdemoui_93734273351681@conference.easemob.com"
-                    },
-                    unread_num: 0
-                }
-            ]
-        }
-        */
-      // });
     },
     /* --------------------拉取会话用户属性--------------------- */
-    getChannelUserInfo: async ({ commit }, params) => {
-      let { data } = await WebIM.conn.fetchUserInfoById([...params]);
+    getChannelUserInfo: async ({
+      commit
+    }, params) => {
+      let {
+        data
+      } = await WebIM.conn.fetchUserInfoById([...params]);
       return Promise.resolve(data);
+    },
+    /* --------------------拉取群组详情--------------------- */
+    getGroupInfo: async ({
+      commit
+    }, params) => {
+      console.log(params);
+      let {
+        groupIdList
+      } = params;
+      groupIdList.length > 0 &&
+        groupIdList.forEach(async (item) => {
+          WebIM.conn.getGroupInfo({
+            groupId: item
+          }).then((res) => {
+            let groupInfo = res['data'][0];
+            commit('SET_GROUPINFO', groupInfo);
+          });
+        });
+
+      //
+    },
+    /* --------------------拿到要更新的lastMsg--------------------- */
+    getToDoUpdateLastMsg: ({
+      commit
+    }, parmas) => {
+      console.log('commit', parmas);
+      commit('UPDATE_CONVERSATION_LIST', parmas);
     },
   },
   getters: {

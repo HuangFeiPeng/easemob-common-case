@@ -1,9 +1,17 @@
+/*
+ * @Author: Neo Huang
+ * @Date: 2021-12-21 16:00:33
+ * @LastEditTime: 2022-02-16 12:22:34
+ * @LastEditors: Neo Huang
+ * @Description: 
+ * @FilePath: /easemob-common-case/src/utils/easemob/EasemobConfig.js
+ */
 const config = {
   socketServer: '//im-api-v2.easemob.com/ws', // socket Server地址
 
   restServer: '//a1.easemob.com', // rest Server地址
 
-  appkey: 'easemob-demo#easeim', // App key
+  appkey: 'easemob-demo#chatdemoui', // App key
   // appkey: 'easemob-demo#shouqian', // App key
 
   https: false, // 是否使用https

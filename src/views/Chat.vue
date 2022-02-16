@@ -68,7 +68,7 @@
           <Message />
         </a-layout-content>
         <a-layout-footer class="layout-footer">
-          <InputBar />
+          <InputBar :selectedObject="selectedObject" />
         </a-layout-footer>
       </a-layout>
     </a-layout>
@@ -105,10 +105,10 @@ export default {
   computed: {
     ...mapGetters(["loginUserInfo", "selectedObject"]),
     handleId() {
-      const { chatType, userInfo, channelId } = this.selectedObject || {};
-      console.log(chatType);
+      const { chatType, userInfo, channelId, groupInfo } =
+        this.selectedObject || {};
       if (chatType === "groupChat") {
-        return channelId;
+        return groupInfo["name"];
       }
       if (chatType === "singleChat" && userInfo.nickname) {
         return userInfo.nickname;

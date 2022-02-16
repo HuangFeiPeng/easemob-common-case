@@ -79,7 +79,9 @@ export default {
         }
         if (item.chatType === "groupChat") {
           let obj = {
-            nickname: `群组${item.channelId}`,
+            nickname: `${
+              (item.groupInfo && item.groupInfo.name) || item.channelId
+            }`,
           };
           return obj;
         }
@@ -118,6 +120,9 @@ export default {
         }
         if (type === "file") {
           return "[文件]";
+        }
+        if (type === "audio") {
+          return "[语音]";
         }
         if (type === "custom" && content.customEvent === "userCard") {
           return `[个人名片]`;
@@ -163,9 +168,8 @@ export default {
       padding-inline-start: 0;
       list-style-type: none;
       width: 100%;
-      height: 800px;
-      overflow: scroll;
       .conver-list-ul-item {
+        position: relative;
         display: flex;
         flex-direction: row;
         justify-content: flex-start;
@@ -188,7 +192,6 @@ export default {
         }
 
         .last-msg-box {
-          position: relative;
           width: 100%;
           padding: 0 8px;
           display: flex;
@@ -229,10 +232,11 @@ export default {
           }
           .time {
             position: absolute;
-            right: 0;
+            right: -20px;
             top: 0;
             width: 80px;
             height: 35px;
+            z-index: 10;
           }
         }
       }
