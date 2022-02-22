@@ -33,7 +33,7 @@
                       <span v-if="item.ext" class="ext-tips">{{
                         handleExtTips(item)
                       }}</span>
-                      <span class="from-name">{{ item.from }}：</span
+                      <span class="from-name">{{ handleFromName(item) }}：</span
                       >{{ handleMsgType(item) }}
                     </p>
                   </div>
@@ -50,6 +50,7 @@
 <script>
 import { mapGetters, mapMutations } from "vuex";
 import { renderTime } from "@/utils/function/renderTime";
+import { HANDLE_MSG_TYPE } from "@/constant/msgType";
 export default {
   data() {
     return {
@@ -87,6 +88,24 @@ export default {
         }
       };
     },
+    //处理lastMsg from name 展示
+    handleFromName() {
+      const myId = WebIM.conn.user;
+      const loginUserInfo = this.loginUserInfo;
+      return (item) => {
+        if (item.from === myId) {
+          console.log(item.from);
+          return loginUserInfo.nickname
+            ? loginUserInfo.nickname
+            : loginUserInfo.users;
+        }
+        if (item.from !== myId) {
+          return item.userInfo && item.userInfo.nickname
+            ? item.userInfo.nickname
+            : item.from;
+        }
+      };
+    },
     //处理ext-tips不同展示效果
     handleExtTips() {
       return (extTips) => {
@@ -115,14 +134,9 @@ export default {
         if (type === "txt") {
           return msg;
         }
-        if (type === "img") {
-          return "[图片]";
-        }
-        if (type === "file") {
-          return "[文件]";
-        }
-        if (type === "audio") {
-          return "[语音]";
+        //其他类型消息
+        if (HANDLE_MSG_TYPE[type]) {
+          return HANDLE_MSG_TYPE[type];
         }
         if (type === "custom" && content.customEvent === "userCard") {
           return `[个人名片]`;

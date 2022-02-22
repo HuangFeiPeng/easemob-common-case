@@ -1,7 +1,7 @@
 /*
  * @Author: Neo Huang
  * @Date: 2021-12-21 16:00:33
- * @LastEditTime: 2022-02-16 12:22:34
+ * @LastEditTime: 2022-02-22 11:12:31
  * @LastEditors: Neo Huang
  * @Description: 
  * @FilePath: /easemob-common-case/src/utils/easemob/EasemobConfig.js

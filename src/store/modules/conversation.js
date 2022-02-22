@@ -1,6 +1,9 @@
 import {
   data
 } from '@/mock/conversation'
+import {
+  MSGTYPE
+} from '@/constant/msgType'
 const Conversation = {
   state: {
     conversation: {},
@@ -11,28 +14,28 @@ const Conversation = {
       state.conversation = list;
     },
     UPDATE_CONVERSATION_LIST: (state, payload) => {
+
       const conversation = Object.assign({}, state.conversation);
       const {
         key,
         msgBody,
-        msgBody: {
-          from,
-          id,
-          isBeself,
-          time,
-          to,
-          content,
-          ext
-        },
       } = payload;
+      //如果该消息为自己所发送
+      let converTarget = conversation[key] || [];
       if (msgBody.isBeself) {
-        let converTarget = Object.assign({}, conversation[key]);
-        for (const key in converTarget) {
-          console.log(key);
-        }
 
-        console.log('>>>>取到对应的key', conversation[key]);
-      } else {}
+        for (const key in msgBody) {
+
+          converTarget[key] = msgBody[key]
+        }
+        state.conversation = conversation
+      } else {
+        for (const key in msgBody) {
+
+          converTarget[key] = msgBody[key]
+        }
+        state.conversation = conversation
+      }
     },
     SET_GROUPINFO: (state, data) => {
       let conversation = Object.assign({}, state.conversation);
@@ -50,14 +53,14 @@ const Conversation = {
       dispatch,
       commit
     }, params) => {
-      console.log('data', data);
+
       const regexp = /.*@easemob.com$/;
       const {
         data: {
           channel_infos
         }
       } = data; //从mock中取
-      console.log('channel_infos: ', channel_infos);
+
       /* 注释部分为从接口调用取会话的方法 */
       // let {
       //   data: {
@@ -127,6 +130,7 @@ const Conversation = {
     getChannelUserInfo: async ({
       commit
     }, params) => {
+      console.log('>>>>>拉取会话用户属性', params)
       let {
         data
       } = await WebIM.conn.fetchUserInfoById([...params]);
@@ -136,7 +140,7 @@ const Conversation = {
     getGroupInfo: async ({
       commit
     }, params) => {
-      console.log(params);
+
       let {
         groupIdList
       } = params;
@@ -156,8 +160,23 @@ const Conversation = {
     getToDoUpdateLastMsg: ({
       commit
     }, parmas) => {
-      console.log('commit', parmas);
-      commit('UPDATE_CONVERSATION_LIST', parmas);
+      console.log('>>>getToDoUpdateLastMsg>>', parmas)
+      const myId = WebIM.conn.user;
+      if (parmas.from === myId) {
+        let key = parmas.to
+        commit('UPDATE_CONVERSATION_LIST', {
+          key,
+          msgBody: parmas
+        });
+
+      } else {
+        let key = parmas.chatType === ("groupchat" || "chatroom") ? parmas.to : parmas.from;
+        commit('UPDATE_CONVERSATION_LIST', {
+          key,
+          msgBody: parmas
+        });
+      }
+
     },
   },
   getters: {

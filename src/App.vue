@@ -5,6 +5,7 @@
 </template>
 <script>
 import { mapActions } from "vuex";
+import msgPackger from "@/utils/function/msgPackager";
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
 export default {
@@ -30,14 +31,22 @@ export default {
           this.initUserData();
         }, //连接成功回调
         onClosed: () => {}, //连接关闭回调
-        onTextMessage: (message) => {
-          console.log("收到文本消息", message);
-          this.sendReadAck(message);
+        onTextMessage: (msg) => {
+          console.log("收到文本消息", msg);
+          this.sendReadAck(msg);
+
+          let body = msgPackger(msg);
+          this.getToDoUpdateLastMsg(body);
         }, //收到文本消息
         onEmojiMessage: (msg) => {}, //收到表情消息
-        onPictureMessage: (msg) => {}, //收到图片消息
+        onPictureMessage: (msg) => {
+          this.getToDoUpdateLastMsg(msg);
+        }, //收到图片消息
         onCmdMessage: (msg) => {}, //收到命令消息
-        onAudioMessage: (msg) => {}, //收到音频消息
+        onAudioMessage: (msg) => {
+          console.log("收到语音消息", msg);
+          this.getToDoUpdateLastMsg(msg);
+        }, //收到音频消息
         onLocationMessage: (msg) => {}, //收到位置消息
         onFileMessage: (msg) => {}, //收到文件消息
         onVideoMessage: function (message) {
