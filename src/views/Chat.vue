@@ -107,7 +107,8 @@ export default {
         { class: "iconfont icon-shezhi" },
       ],
       isShowCheckbox: false, //显示转发checkbox
-      isShowCite: false, //显示引用
+      isShowCite: false, //显示引用,
+      CiteContent: null, //引用内容
     };
   },
   computed: {

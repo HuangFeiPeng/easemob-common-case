@@ -1,7 +1,7 @@
 /*
  * @Author: Neo Huang
  * @Date: 2021-12-26 18:24:54
- * @LastEditTime: 2022-02-23 00:24:24
+ * @LastEditTime: 2022-02-25 00:21:01
  * @LastEditors: Neo Huang
  * @Description: 
  * @FilePath: /easemob-common-case/src/store/modules/msgList.js
@@ -17,18 +17,21 @@ const MsgList = {
     SET_SELECTED_OBJ: (state, data) => {
       state.selectedObject = Object.assign({}, data);
     },
-    ADD_NEW_MESSAGE: (state, param) => {
+    ADD_NEW_MESSAGE: (state, msgBody) => {
+      console.log('>>>ADD_NEW_MESSAGE>>>>', msgBody)
       //此处重新赋值messageList为解决Vue中监听不到对象内部变化问题。
       const todoUpdateMsgList = Object.assign({}, state.messageList);
-      let {
-        key,
-        msgBody
-      } = param;
+      const myId = WebIM.conn.user;
 
+      const key = msgBody.chatType === 'singleChat' ? msgBody.to === myId ? msgBody.from : msgBody.to : msgBody.to
+      console.log('>>>>>>>key', key)
       if (!todoUpdateMsgList[key]) {
         todoUpdateMsgList[key] = []
+        todoUpdateMsgList[key].push(msgBody)
+      } else {
+        todoUpdateMsgList[key].push(msgBody)
       }
-      todoUpdateMsgList[key].push(msgBody)
+
       state.messageList = todoUpdateMsgList;
     },
   },
@@ -61,13 +64,10 @@ const MsgList = {
           const {
             serverMsgId
           } = res;
-          msg.mid = serverMsgId
-          let body = msgPackger(msg)
-          dispatch('getToDoUpdateLastMsg', body);
-          commit('ADD_NEW_MESSAGE', {
-            key: toId,
-            msgBody: body
-          });
+          msg.id = serverMsgId
+          let msgBody = msgPackger(msg)
+          dispatch('getToDoUpdateLastMsg', msgBody);
+          commit('ADD_NEW_MESSAGE', msgBody);
           return resolve(res);
         }).catch((e) => {
           console.log('error', e)

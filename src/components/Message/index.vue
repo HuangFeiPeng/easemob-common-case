@@ -25,8 +25,8 @@
           :overlayStyle="{ cursor: 'pointer' }"
         >
           <template slot="content">
-            <span @click.prevent.stop="changeShowCheckBox">转发</span>
-            | <span>撤回</span> | <span>删除</span> |
+            <span @click.prevent.stop="changeShowCheckBox">转发 | </span>
+            <span v-if="item.from === myId">撤回 | </span> <span>删除 | </span>
             <span @click.stop.prevent="changeShowCite">引用</span>
           </template>
           <div
@@ -36,13 +36,42 @@
               color: item.isBeself ? '#FFF' : '#000',
             }"
           >
-            {{ item["content"]["msg"] }}
-          </div></a-popover
-        >
+            {{ item.type }}
+            <template v-if="item['content']['type'] === 'txt'">
+              {{ item["content"]["msg"] }}
+            </template>
+            <template v-if="item['content']['type'] === 'img'">
+              <img
+                :src="item['content']['msg']"
+                alt=""
+                :width="
+                  item['content']['width']
+                    ? item['content']['width'] / 10
+                    : '50'
+                "
+                :height="
+                  item['content']['height']
+                    ? item['content']['height'] / 10
+                    : '50'
+                "
+              />
+            </template></div
+        ></a-popover>
 
         <div class="msgCard-content-item-right">
           {{ renderTime(item.time) }}
         </div>
+      </div>
+      <!-- 转发按钮 -->
+      <div class="transpond_btn" v-if="isShowTranspondBtn">
+        <a-button-group>
+          <a-button type="primary" @click="toGoTransoundDetail">
+            <a-icon type="left" />转发
+          </a-button>
+          <a-button type="primary" @click="channelTranspondMsg">
+            取消<a-icon type="right" />
+          </a-button>
+        </a-button-group>
       </div>
     </template>
   </div>
@@ -50,6 +79,7 @@
 <script>
 import { mapState } from "vuex";
 import { renderTime } from "@/utils/function/renderTime";
+import WebIM from "../../utils/easemob/initEasemob";
 export default {
   props: {
     isShowCheckbox: {
@@ -64,7 +94,11 @@ export default {
     },
   },
   data() {
-    return {};
+    return {
+      myId: WebIM.conn.user, //当前登陆ID
+      isShowTranspondBtn: false, //转发按钮显隐状态
+      clickMessage: [], //转发选中消息存放数组 存放值为消息id
+    };
   },
   computed: {
     ...mapState({
@@ -79,9 +113,21 @@ export default {
     },
   },
   methods: {
+    //转发消息状态
     changeShowCheckBox() {
-      this.$emit("update:isShowCheckbox", !this.isShowCheckbox);
+      this.isShowTranspondBtn = true;
+      this.$emit("update:isShowCheckbox", true);
     },
+    //执行转发消息
+    toGoTransoundDetail() {
+      console.log("执行转发消息");
+    },
+    //取消转发消息
+    channelTranspondMsg() {
+      this.isShowTranspondBtn = false;
+      this.$emit("update:isShowCheckbox", false);
+    },
+    //引用消息状态
     changeShowCite() {
       this.$emit("update:isShowCite", true);
     },
@@ -94,6 +140,7 @@ export default {
 
 <style lang="less" scoped>
 .app-container {
+  position: relative;
   width: 100%;
   height: 100%;
   padding: 10px;
@@ -132,6 +179,12 @@ export default {
 
       padding-top: 18px;
     }
+  }
+  .transpond_btn {
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    z-index: 99;
   }
 }
 </style>

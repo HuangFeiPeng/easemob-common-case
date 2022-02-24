@@ -1,7 +1,7 @@
 /*
  * @Author: Neo Huang
  * @Date: 2022-02-16 17:28:01
- * @LastEditTime: 2022-02-22 11:26:36
+ * @LastEditTime: 2022-02-24 23:58:49
  * @LastEditors: Neo Huang
  * @Description: 
  * @FilePath: /easemob-common-case/src/constant/msgType.js

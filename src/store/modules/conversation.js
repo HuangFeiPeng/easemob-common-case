@@ -170,7 +170,8 @@ const Conversation = {
         });
 
       } else {
-        let key = parmas.chatType === ("groupchat" || "chatroom") ? parmas.to : parmas.from;
+        let key = parmas.chatType === ("groupChat" || "chatRoom") ? parmas.to : parmas.from;
+        console.log('>>>>>>>>>接收他人的消息', key, parmas)
         commit('UPDATE_CONVERSATION_LIST', {
           key,
           msgBody: parmas

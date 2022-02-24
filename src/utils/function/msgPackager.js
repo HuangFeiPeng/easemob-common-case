@@ -1,26 +1,51 @@
 /*
  * @Author: Neo Huang
  * @Date: 2022-02-21 23:33:44
- * @LastEditTime: 2022-02-22 11:27:01
+ * @LastEditTime: 2022-02-25 00:11:37
  * @LastEditors: Neo Huang
  * @Description: 
  * @FilePath: /easemob-common-case/src/utils/function/msgPackager.js
  */
-import {
-    MSGTYPE,
-    CHAT_TYPE
-} from '@/constant/msgType'
+const defaultContent = (initMsg) => {
+    let msgContent = {}
+    switch (initMsg.type) {
+
+        case 'txt':
+            msgContent = {
+                msg: initMsg.msg,
+                type: initMsg.type,
+            }
+            break;
+        case 'img':
+            msgContent = {
+                msg: initMsg.url,
+                type: initMsg.type,
+                width: initMsg.width,
+                height: initMsg.height
+            }
+        case 'file':
+            msgContent = {
+                msg: initMsg.url,
+                type: initMsg.type,
+                width: initMsg.width,
+                height: initMsg.height
+            }
+        default:
+            break;
+    }
+    return msgContent
+
+}
 const msgPackger = (initMsg) => {
+    let a =
+        console.log('initMsginitMsginitMsg', initMsg, 'a', a)
     const myId = WebIM.conn.user;
     let packgeredMsg = {
-        id: initMsg.mid ? initMsg.mid : initMsg.id,
+        id: initMsg.id && initMsg.id,
         to: initMsg.to && initMsg.to || "",
-        content: {
-            msg: initMsg.msg ? initMsg.msg : initMsg.sourceMsg,
-            type: initMsg.contentsType ? MSGTYPE[initMsg.contentsType] : initMsg.type,
-        },
-        chatType: initMsg.chatType ? initMsg.chatType : CHAT_TYPE[initMsg.type],
-        from: initMsg.from ? initMsg.from : "",
+        content: defaultContent(initMsg),
+        chatType: initMsg.chatType,
+        from: initMsg.from,
         isBeself: initMsg.from === myId ? true : false,
         ext: initMsg.ext,
         time: initMsg.time ? initMsg.time : Date.now(),
