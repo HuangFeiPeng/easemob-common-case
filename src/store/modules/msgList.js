@@ -1,7 +1,7 @@
 /*
  * @Author: Neo Huang
  * @Date: 2021-12-26 18:24:54
- * @LastEditTime: 2022-02-22 00:26:28
+ * @LastEditTime: 2022-02-23 00:24:24
  * @LastEditors: Neo Huang
  * @Description: 
  * @FilePath: /easemob-common-case/src/store/modules/msgList.js
@@ -17,18 +17,19 @@ const MsgList = {
     SET_SELECTED_OBJ: (state, data) => {
       state.selectedObject = Object.assign({}, data);
     },
-    ADD_NEW_MESSAGE: (state, payload) => {
-
+    ADD_NEW_MESSAGE: (state, param) => {
+      //此处重新赋值messageList为解决Vue中监听不到对象内部变化问题。
+      const todoUpdateMsgList = Object.assign({}, state.messageList);
       let {
         key,
         msgBody
-      } = payload;
-      if (state.messageList[key]) {
-        state.messageList[key].push(msgBody);
-      } else {
-        state.messageList[key] = [];
-        state.messageList[key].push(msgBody);
+      } = param;
+
+      if (!todoUpdateMsgList[key]) {
+        todoUpdateMsgList[key] = []
       }
+      todoUpdateMsgList[key].push(msgBody)
+      state.messageList = todoUpdateMsgList;
     },
   },
   actions: {
@@ -62,11 +63,11 @@ const MsgList = {
           } = res;
           msg.mid = serverMsgId
           let body = msgPackger(msg)
+          dispatch('getToDoUpdateLastMsg', body);
           commit('ADD_NEW_MESSAGE', {
             key: toId,
             msgBody: body
           });
-          dispatch('getToDoUpdateLastMsg', body);
           return resolve(res);
         }).catch((e) => {
           console.log('error', e)

@@ -53,7 +53,7 @@
           >发送</a-button
         >
 
-        <div v-show="isShowQutoe" class="quote-box">
+        <div v-show="isShowCite" class="quote-box">
           <p>引用内容：{{ textContent }}</p>
         </div>
       </a-col>
@@ -73,7 +73,13 @@ export default {
   props: {
     selectedObject: {
       type: Object,
+      requied: true,
       default: () => ({}),
+    },
+    isShowCite: {
+      type: Boolean,
+      requied: true,
+      default: false,
     },
   },
   data() {
@@ -87,7 +93,6 @@ export default {
       isShowEmojiBox: false,
       textContent: "",
       innerHTML: "",
-      isShowQutoe: true,
       atUserList: [],
       options: {
         trigger: "@",

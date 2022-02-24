@@ -65,10 +65,16 @@
           </span>
         </a-layout-header>
         <a-layout-content class="layout-content">
-          <Message />
+          <Message
+            :isShowCheckbox.sync="isShowCheckbox"
+            :isShowCite.sync="isShowCite"
+          />
         </a-layout-content>
         <a-layout-footer class="layout-footer">
-          <InputBar :selectedObject="selectedObject" />
+          <InputBar
+            :selectedObject="selectedObject"
+            :isShowCite.sync="isShowCite"
+          />
         </a-layout-footer>
       </a-layout>
     </a-layout>
@@ -92,14 +98,16 @@ export default {
   },
   data() {
     return {
-      visible: false,
-      index: 0,
+      visible: false, //个人信息卡片显隐
+      index: 0, //tablist 下标
       memuList: [
         { class: "iconfont icon-dangqianhuihua" },
         { class: "iconfont icon-haoyou" },
         { class: "iconfont icon-qunzuduoren" },
         { class: "iconfont icon-shezhi" },
       ],
+      isShowCheckbox: false, //显示转发checkbox
+      isShowCite: false, //显示引用
     };
   },
   computed: {

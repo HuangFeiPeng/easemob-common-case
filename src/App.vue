@@ -16,6 +16,7 @@ export default {
     };
   },
   created() {
+    WebIM.logger.disableAll();
     this.initEasemobListen();
     this.login();
   },
@@ -34,7 +35,6 @@ export default {
         onTextMessage: (msg) => {
           console.log("收到文本消息", msg);
           this.sendReadAck(msg);
-
           let body = msgPackger(msg);
           this.getToDoUpdateLastMsg(body);
         }, //收到文本消息
