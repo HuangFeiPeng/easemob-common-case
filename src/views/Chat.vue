@@ -22,8 +22,8 @@
               style="color: #f56a00; backgroundcolor: #fde3cf"
             >
               {{
-                loginUserInfo.avatarurl
-                  ? loginUserInfo.avatarurl
+                loginUserInfo.nickname
+                  ? loginUserInfo.nickname
                   : loginUserInfo.users
               }}
             </a-avatar>

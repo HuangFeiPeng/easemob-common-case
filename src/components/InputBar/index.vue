@@ -56,7 +56,7 @@
         <div v-show="isShowCite" class="quote-box">
           <template v-if="citeContent">
             <p class="quote-content">
-              {{ citeContent.content && citeContent.content.msg }}
+              {{ citeShowMsgType(citeContent) }}
             </p>
           </template>
 
@@ -97,6 +97,7 @@ export default {
   },
   data() {
     return {
+      HANDLE_MSG_TYPE,
       funcIconList: [
         { class: "icon-biaoqing", funcName: "handleShowEmoji" },
         { class: "icon-tupian", funcName: "handleUploadImg" },
@@ -135,7 +136,18 @@ export default {
       }
     },
   },
-
+  computed: {
+    citeShowMsgType() {
+      return (citeMsg) => {
+        if (citeMsg.content && citeMsg.content.type === "txt") {
+          return `${citeMsg.from}：${citeMsg.content.msg}`;
+        } else if (citeMsg.content) {
+          return `${citeMsg.from}：${HANDLE_MSG_TYPE[citeMsg.content.type]}`;
+        }
+        // return citeMsg;
+      };
+    },
+  },
   methods: {
     ...mapActions(["sendTextMessage"]),
     addEmoji(emoji) {
@@ -224,6 +236,7 @@ export default {
         });
         this.textContent = "";
         this.$refs["editable"].innerHTML = "";
+        this.atUserList = [];
         this.cannelCite();
       } catch (error) {
         console.log(">>>>发送失败");

@@ -3,7 +3,7 @@
  * @Date: 2021-12-21 16:00:33
  * @LastEditTime: 2022-02-22 11:12:31
  * @LastEditors: Neo Huang
- * @Description: 
+ * @Description:
  * @FilePath: /easemob-common-case/src/utils/easemob/EasemobConfig.js
  */
 const config = {
@@ -11,8 +11,8 @@ const config = {
 
   restServer: '//a1.easemob.com', // rest Server地址
 
+  // appkey: 'easemob-demo#easeim', // App key
   appkey: 'easemob-demo#chatdemoui', // App key
-  // appkey: 'easemob-demo#shouqian', // App key
 
   https: false, // 是否使用https
 

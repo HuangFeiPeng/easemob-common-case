@@ -1,6 +1,6 @@
 
 <template>
-  <div class="app-container">
+  <div class="app-container" ref="app-container">
     <template v-if="key">
       <a-checkbox-group v-model="clickMessage">
         <div
@@ -74,11 +74,11 @@
                   <a-divider type="vertical" />
                 </template>
                 <!-- 置顶 -->
-                <template>
+                <!-- <template>
                   <a-button size="small" type="link"> 置顶</a-button>
                   <a-divider type="vertical" />
                 </template>
-
+ -->
                 <!-- 删除 -->
                 <template>
                   <a-popconfirm
@@ -104,6 +104,7 @@
                   >
                 </template>
               </template>
+              <!-- 消息气泡主体 -->
               <div
                 class="msgCard-content-item-middle"
                 :style="{
@@ -170,8 +171,11 @@
                     </p>
                   </div>
                 </template>
-              </div></a-popover
-            >
+              </div>
+              <div class="citeMsg-box" v-if="item.ext.citeMsg">
+                {{ handleCiteShowMsgType(item.ext.citeMsg) }}
+              </div>
+            </a-popover>
 
             <div class="msgCard-content-item-right">
               {{ renderTime(item.time) }}
@@ -234,9 +238,13 @@ export default {
       clickMessage: [], //转发选中消息存放数组 存放值为消息id
     };
   },
-  created() {},
+  created() {
+    this.$nextTick(() => {
+      this.scrollFunc();
+    });
+  },
   computed: {
-    ...mapGetters(["loginUserInfo"]),
+    ...mapGetters(["loginUserInfo", "selectedObject"]),
     ...mapState({
       msgList: (state) => state.MsgList.messageList,
       key: (state) =>
@@ -266,10 +274,36 @@ export default {
         }
       };
     },
+    handleCiteShowMsgType() {
+      return (citeMsg) => {
+        if (citeMsg.content && citeMsg.content.type === "txt") {
+          return `${citeMsg.from}：${citeMsg.content.msg}`;
+        } else if (citeMsg.content) {
+          return `${citeMsg.from}：${HANDLE_MSG_TYPE[citeMsg.content.type]}`;
+        }
+        // return citeMsg;
+      };
+    },
+  },
+  watch: {
+    msgList(oldVal, newVal) {
+      this.scrollFunc();
+    },
+    selectedObject(oldVal, newVal) {
+      console.log(">>>>>监听到选中用户变化");
+      this.scrollFunc();
+    },
   },
   methods: {
     ...mapActions(["sendTransmitMessage", "startRecallMessage"]),
     ...mapMutations(["DELETE_MESSAGE"]),
+    //滚动方法
+    scrollFunc() {
+      this.$nextTick(() => {
+        let nowScrollHeigh = this.$refs["app-container"].scrollHeight;
+        this.$refs["app-container"].scrollTop = nowScrollHeigh;
+      });
+    },
     //检验当前要撤回的消息是否已经容许撤回时间
     judegRecallTime(status, item) {
       const nowTime = Date.now();
@@ -400,6 +434,22 @@ export default {
             }
           }
         }
+      }
+      .citeMsg-box {
+        margin: 3px 4px;
+        min-width: 50px;
+        max-width: 250px;
+        height: 25px;
+        line-height: 25px;
+        background: #e5e5e5;
+        border-radius: 3px;
+        font-size: 7px;
+        font-weight: 700;
+        color: #918f8f;
+        padding: 0 3px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
       }
       .msgCard-content-item-right {
         font-size: 7px;
