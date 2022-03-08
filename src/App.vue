@@ -21,7 +21,7 @@ export default {
     this.login();
   },
   methods: {
-    ...mapMutations(["ADD_NEW_MESSAGE"]),
+    ...mapMutations(["ADD_NEW_MESSAGE", "UPTATE_MESSAGE"]),
     ...mapActions(["getUserInfo", "getSessionList", "getToDoUpdateLastMsg"]),
     /* ------------- 环信初始化监听回调（该步骤必须优先挂载） ------------ */
     initEasemobListen() {
@@ -33,6 +33,7 @@ export default {
         }, // 连接成功回调。
         onDisconnected: (msg) => {}, // 连接关闭回调。
         onTextMessage: (msg) => {
+          console.log(">>>>msg", msg);
           let msgBody = msgPackger(msg);
           this.ADD_NEW_MESSAGE(msgBody);
           this.getToDoUpdateLastMsg(msgBody);
@@ -48,9 +49,19 @@ export default {
         onAudioMessage: (msg) => {}, // 收到音频消息。
         onLocationMessage: (msg) => {}, // 收到位置消息。
         onFileMessage: (msg) => {}, // 收到文件消息。
-        onCustomMessage: (msg) => {}, // 收到自定义消息。
+        onCustomMessage: (msg) => {
+          console.log(">>>>>自定义消息", msg);
+          let msgBody = msgPackger(msg);
+          this.ADD_NEW_MESSAGE(msgBody);
+          this.getToDoUpdateLastMsg(msgBody);
+        }, // 收到自定义消息。
         onVideoMessage: (msg) => {}, // 收到视频消息。
-        onRecallMessage: (msg) => {}, // 收到消息撤回回执。
+        onRecallMessage: (msg) => {
+          console.log(">>>>>+++收到撤回消息的回执", msg);
+          const { from, to, mid } = msg;
+          let key = to === WebIM.conn.user ? from : to;
+          this.UPTATE_MESSAGE({ key: key, recallId: mid });
+        }, // 收到消息撤回回执。
         onReceivedMessage: (msg) => {}, // 收到消息送达服务器回执。
         onDeliveredMessage: (msg) => {}, // 收到消息送达客户端回执。
         onReadMessage: (msg) => {}, // 收到消息已读回执。
@@ -67,6 +78,7 @@ export default {
           // 查询黑名单、将好友拉黑以及将好友移出黑名单均会触发该回调，`list` 列明黑名单上的现有好友。
         },
       });
+      /* 3.xSDK监听 */
       // conn.listen({
       //   onOpened: () => {
       //

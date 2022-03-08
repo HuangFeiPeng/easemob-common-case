@@ -3,7 +3,7 @@ import {
 } from '@/mock/conversation'
 import {
   MSGTYPE
-} from '@/constant/msgType'
+} from '@/constants/msgType'
 const Conversation = {
   state: {
     conversation: {},

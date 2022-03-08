@@ -23,6 +23,7 @@ const defaultContent = (initMsg) => {
                 width: initMsg.width,
                 height: initMsg.height
             }
+            break;
         case 'file':
             msgContent = {
                 msg: initMsg.url,
@@ -30,6 +31,14 @@ const defaultContent = (initMsg) => {
                 width: initMsg.width,
                 height: initMsg.height
             }
+            break;
+        case 'custom':
+            msgContent = {
+                customEvent: initMsg.customEvent,
+                customExts: initMsg.customExts,
+                type: initMsg.type,
+            }
+            break;
         default:
             break;
     }
@@ -37,20 +46,18 @@ const defaultContent = (initMsg) => {
 
 }
 const msgPackger = (initMsg) => {
-    let a =
-        console.log('initMsginitMsginitMsg', initMsg, 'a', a)
+    console.log('initMsginitMsginitMsg?>>>', initMsg)
     const myId = WebIM.conn.user;
     let packgeredMsg = {
         id: initMsg.id && initMsg.id,
         to: initMsg.to && initMsg.to || "",
         content: defaultContent(initMsg),
         chatType: initMsg.chatType,
-        from: initMsg.from,
-        isBeself: initMsg.from === myId ? true : false,
+        from: initMsg.from ? initMsg.from : myId,
+        isBeself: (initMsg.from === '' || initMsg.from === myId) ? true : false,
         ext: initMsg.ext,
         time: initMsg.time ? initMsg.time : Date.now(),
     }
-    console.log('>>>>>开始处理结构消息', packgeredMsg)
     return packgeredMsg
 
 }

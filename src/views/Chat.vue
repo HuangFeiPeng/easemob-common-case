@@ -68,12 +68,15 @@
           <Message
             :isShowCheckbox.sync="isShowCheckbox"
             :isShowCite.sync="isShowCite"
+            @setCiteContent="setCiteContent"
           />
         </a-layout-content>
         <a-layout-footer class="layout-footer">
           <InputBar
             :selectedObject="selectedObject"
             :isShowCite.sync="isShowCite"
+            :citeContent="citeContent"
+            @setCiteContent="setCiteContent"
           />
         </a-layout-footer>
       </a-layout>
@@ -108,7 +111,7 @@ export default {
       ],
       isShowCheckbox: false, //显示转发checkbox
       isShowCite: false, //显示引用,
-      CiteContent: null, //引用内容
+      citeContent: {}, //引用内容
     };
   },
   computed: {
@@ -124,6 +127,12 @@ export default {
       } else {
         return channelId;
       }
+    },
+  },
+  methods: {
+    setCiteContent(msgData) {
+      console.log(">>>>赋值引用消息内容", msgData);
+      this.citeContent = msgData;
     },
   },
 };

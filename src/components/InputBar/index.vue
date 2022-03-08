@@ -52,9 +52,17 @@
           type="primary"
           >发送</a-button
         >
-
+        <!-- 引用消息预览 -->
         <div v-show="isShowCite" class="quote-box">
-          <p>引用内容：{{ textContent }}</p>
+          <template v-if="citeContent">
+            <p class="quote-content">
+              {{ citeContent.content && citeContent.content.msg }}
+            </p>
+          </template>
+
+          <div class="cannelCite" @click.stop.prevent="cannelCite">
+            <a-icon type="close" />
+          </div>
         </div>
       </a-col>
     </a-row>
@@ -65,7 +73,8 @@
 import { mapActions } from "vuex";
 import VueTribute from "vue-tribute";
 import { emoji_icon } from "@/assets/face/index.js";
-import { MESSAGR_ERROR_CODE } from "./constant/index";
+import { HANDLE_MSG_TYPE } from "../../constants/msgType";
+import { MESSAGR_ERROR_CODE } from "../../constants/errorCode";
 export default {
   components: {
     VueTribute,
@@ -80,6 +89,10 @@ export default {
       type: Boolean,
       requied: true,
       default: false,
+    },
+    citeContent: {
+      type: Object,
+      default: () => ({}),
     },
   },
   data() {
@@ -130,6 +143,7 @@ export default {
       this.$refs["editable"].append(emoji);
       this.textContent = this.textContent + emoji;
     },
+    //循环点击调用对应的时间
     StrToFunc(funcName) {
       this[funcName]();
     },
@@ -159,9 +173,6 @@ export default {
         });
       this.options.values = values;
     },
-    // noMatchFound() {
-    //   console.log("暂无数据");
-    // },
     //富文本内容改变回调
     valueChange(e) {
       //监听到如果是删除操作，进入到处理删除逻辑方法
@@ -173,7 +184,7 @@ export default {
       this.textContent = e.target.textContent;
       // this.innerHTML = e.target.innerHTML;
     },
-
+    //取消@
     deleteAtUser(nodes) {
       const atUsersList = this.atUserList;
       let atId = [];
@@ -201,15 +212,19 @@ export default {
       const em_at_list = this.atUserList;
       const toId = this.selectedObject.channelId;
       const chatType = this.selectedObject.chatType;
+      const citeMsg = Object.assign({}, this.citeContent);
+      console.log(">>>>>>citeMsg", citeMsg);
       try {
         await this.sendTextMessage({
           msgData,
           em_at_list,
+          citeMsg,
           chatType,
           toId,
         });
         this.textContent = "";
         this.$refs["editable"].innerHTML = "";
+        this.cannelCite();
       } catch (error) {
         console.log(">>>>发送失败");
         this.$notification.error({
@@ -218,6 +233,11 @@ export default {
           duration: 2,
         });
       }
+    },
+    //取消引用
+    cannelCite() {
+      this.$emit("update:isShowCite", false);
+      this.$emit("setCiteContent", {});
     },
   },
 };
@@ -354,11 +374,26 @@ export default {
   font-weight: bold;
 }
 .quote-box {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
   margin-top: 3px;
   width: 80%;
   height: 25px;
   border-radius: 3px;
-  padding: 0 3px;
+  padding: 0 10px;
   background: #f3f3f3;
+  .quote-content {
+    min-width: 50px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .cannelCite {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+  }
 }
 </style>

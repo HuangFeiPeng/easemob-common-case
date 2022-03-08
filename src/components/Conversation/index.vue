@@ -30,6 +30,7 @@
                   </div>
                   <div class="content-last-msg">
                     <p class="msg">
+                      <!-- 如果last含有ext就特别处理 -->
                       <span v-if="item.ext" class="ext-tips">{{
                         handleExtTips(item)
                       }}</span>
@@ -50,7 +51,7 @@
 <script>
 import { mapGetters, mapMutations } from "vuex";
 import { renderTime } from "@/utils/function/renderTime";
-import { HANDLE_MSG_TYPE } from "@/constant/msgType";
+import { HANDLE_MSG_TYPE } from "@/constants/msgType";
 export default {
   data() {
     return {
@@ -111,12 +112,14 @@ export default {
       return (extTips) => {
         let showType = "";
         let loginUser = WebIM.conn.user;
+        //ext 为 em_at_list为@
         if (
           extTips.ext["em_at_list"] &&
           extTips.ext["em_at_list"].indexOf(loginUser) !== -1
         ) {
           return (showType = "[有人@我]");
         }
+        //ext 为 extTips.ext.msgType 音视频呼叫
         if (extTips.ext.msgType && extTips.ext.msgType === "rtcCallWithAgora") {
           return (showType = "[音视频呼叫]");
         }
@@ -140,6 +143,9 @@ export default {
         }
         if (type === "custom" && content.customEvent === "userCard") {
           return `[个人名片]`;
+        }
+        if (type === "custom" && content.customEvent === "transmitMsg") {
+          return `[聊天记录]`;
         }
       };
     },
