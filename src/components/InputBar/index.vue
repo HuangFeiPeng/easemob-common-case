@@ -118,7 +118,7 @@ export default {
         positionMenu: true,
         selectTemplate: (item) => {
           //利用选中后的回调,把选定的id加入到被@的数组当中
-          console.log(item.original.key);
+ 
           this.atUserList.push(item.original.key);
           return `<span id="${item.original.key}" contenteditable="false"><a>
             @
@@ -225,7 +225,7 @@ export default {
       const toId = this.selectedObject.channelId;
       const chatType = this.selectedObject.chatType;
       const citeMsg = Object.assign({}, this.citeContent);
-      console.log(">>>>>>citeMsg", citeMsg);
+
       try {
         await this.sendTextMessage({
           msgData,
@@ -239,7 +239,6 @@ export default {
         this.atUserList = [];
         this.cannelCite();
       } catch (error) {
-        console.log(">>>>发送失败");
         this.$notification.error({
           message: "消息发送失败",
           description: `${MESSAGR_ERROR_CODE[error["type"]]}`,

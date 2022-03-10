@@ -8,7 +8,7 @@
           v-for="(item, index) in msgList[key]"
           :key="item.time"
         >
-          <template v-if="!item.recallStatus">
+          <template v-if="!item.content.recallStatus">
             <a-checkbox
               v-if="
                 isShowCheckbox &&
@@ -182,7 +182,7 @@
             </div>
           </template>
           <!--item['content']['customEvent'] !== 'transmitMsg' 禁止转发类型消息再次转发  -->
-          <a-divider v-if="item.recallStatus"
+          <a-divider v-if="item.content.recallStatus"
             ><span class="recall-text"
               >{{ judegRecallFrom(item.from) }}撤回了一条消息</span
             ></a-divider
@@ -290,7 +290,6 @@ export default {
       this.scrollFunc();
     },
     selectedObject(oldVal, newVal) {
-      console.log(">>>>>监听到选中用户变化");
       this.scrollFunc();
     },
   },
@@ -311,7 +310,6 @@ export default {
       if (nowTime - item.time > 120000) {
         return (item.recallTimeout = true);
       }
-      console.log(">>>judegRecallTime");
     },
     //转发消息状态
     changeShowCheckBox() {
@@ -331,7 +329,6 @@ export default {
         //发送完毕初始化
         this.channelTranspondMsg();
       });
-      console.log("执行转发消息", clickMessage, usersList);
     },
     //取消转发消息
     channelTranspondMsg() {
@@ -347,7 +344,6 @@ export default {
 
     //删除本地消息
     deleteTargetMsg(idx) {
-      console.log(">>>>idx要删除的消息下标", idx);
       const payload = {
         key: this.key,
         index: idx,

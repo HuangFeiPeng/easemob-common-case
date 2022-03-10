@@ -131,7 +131,6 @@ export default {
   },
   methods: {
     setCiteContent(msgData) {
-      console.log(">>>>赋值引用消息内容", msgData);
       this.citeContent = msgData;
     },
   },

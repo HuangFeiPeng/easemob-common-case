@@ -16,6 +16,7 @@ export default {
     };
   },
   created() {
+    console.log(">>>>>>created");
     WebIM.logger.disableAll();
     this.initEasemobListen();
     this.login();
@@ -60,7 +61,9 @@ export default {
           console.log(">>>>>+++收到撤回消息的回执", msg);
           const { from, to, mid } = msg;
           let key = to === WebIM.conn.user ? from : to;
+          let toRecallMsgBody = this.findRecallMessage(key, mid);
           this.UPTATE_MESSAGE({ key: key, recallId: mid });
+          this.getToDoUpdateLastMsg(toRecallMsgBody);
         }, // 收到消息撤回回执。
         onReceivedMessage: (msg) => {}, // 收到消息送达服务器回执。
         onDeliveredMessage: (msg) => {}, // 收到消息送达客户端回执。
@@ -191,6 +194,19 @@ export default {
         to: from,
       });
       WebIM.conn.send(msg.body);
+    },
+    //根据撤回回执取出对应消息体
+    findRecallMessage(key, mid) {
+      let messageList = this.$store.state.MsgList.messageList;
+      let toDorecallMsgBody = {};
+      if (messageList[key].length > 0) {
+        messageList[key].map((item) => {
+          if (item.id === mid) {
+            return (toDorecallMsgBody = item);
+          }
+        });
+      }
+      return toDorecallMsgBody;
     },
   },
 };

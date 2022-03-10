@@ -19,7 +19,6 @@ const MsgList = {
       state.selectedObject = Object.assign({}, data);
     },
     ADD_NEW_MESSAGE: (state, msgBody) => {
-      console.log('>>>ADD_NEW_MESSAGE>>>>', msgBody);
       //此处重新赋值messageList为解决Vue中监听不到对象内部变化问题。
       const todoUpdateMsgList = Object.assign({}, state.messageList);
       const myId = WebIM.conn.user;
@@ -30,7 +29,7 @@ const MsgList = {
             ? msgBody.from
             : msgBody.to
           : msgBody.to;
-      console.log('>>>>>>>key', key);
+
       if (!todoUpdateMsgList[key]) {
         todoUpdateMsgList[key] = [];
         todoUpdateMsgList[key].push(msgBody);
@@ -49,9 +48,8 @@ const MsgList = {
       const todoUpdateMsgList = Object.assign({}, state.messageList);
       const { key, recallId } = payload;
       todoUpdateMsgList[key].map((item) => {
-        console.log(recallId);
         if (item.id === recallId) {
-          return (item.recallStatus = true);
+          return (item.content.recallStatus = true);
         }
       });
       state.messageList = todoUpdateMsgList;
@@ -61,7 +59,7 @@ const MsgList = {
     //发送文本消息
     sendTextMessage: ({ commit, dispatch }, params) => {
       const { msgData, em_at_list, chatType, citeMsg, toId } = params;
-      console.log('>>sendTextMessage>>>', citeMsg);
+
       return new Promise((resolve, reject) => {
         let option = {
           msg: msgData, // 消息内容
@@ -94,18 +92,11 @@ const MsgList = {
     },
     //合并转发消息 【基于自定义消息实现】
     sendTransmitMessage: ({ rootState, dispatch, commit }, payload) => {
-      // console.log('>>>>>>>开始转发', rootState, payload)
       const { usersList, clickMessage } = payload;
       const { conversation } = rootState.Conversation;
-      console.log('Conversation', conversation, clickMessage);
+
       usersList.length > 0 &&
         usersList.forEach((item) => {
-          console.log(
-            '要发的目标id为',
-            item,
-            '要发的目标类型为',
-            conversation[item].chatType
-          );
           let option = {
             chatType: conversation[item].chatType,
             type: 'custom',
@@ -131,18 +122,9 @@ const MsgList = {
               console.log('fail', e); // 如禁言或拉黑后消息发送失败。
             });
         });
-
-      // let msg = WebIM.message.create(option)
-      // connection.send(msg).then(() => {
-      //   console.log('success'); // 消息发送成功。
-      // }).catch((e) => {
-      //   console.log("fail"); // 如禁言或拉黑后消息发送失败。
-      // });
     },
-    //删除消息
-
     //撤回消息
-    startRecallMessage: ({ commit }, payload) => {
+    startRecallMessage: ({ dispatch, commit }, payload) => {
       const msgData = payload;
       const { id, to, chatType } = msgData;
       let option = {
@@ -157,7 +139,8 @@ const MsgList = {
             key: to,
             recallId: id,
           });
-          //todo更新会话列表
+          //撤回成功 更新会话列表中的lastmessage
+          dispatch('getToDoUpdateLastMsg', msgData);
           resolve(res);
         } catch (error) {
           // 消息撤回失败 (超过 2 分钟)。

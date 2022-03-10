@@ -1,64 +1,43 @@
-import {
-  data
-} from '@/mock/conversation'
-import {
-  MSGTYPE
-} from '@/constants/msgType'
+import { data } from '@/mock/conversation';
+import { MSGTYPE } from '@/constants/msgType';
 const Conversation = {
   state: {
     conversation: {},
   },
   mutations: {
     INIT_CONVERSATION_LIST: (state, list) => {
-
       state.conversation = list;
     },
     UPDATE_CONVERSATION_LIST: (state, payload) => {
-
       const conversation = Object.assign({}, state.conversation);
-      const {
-        key,
-        msgBody,
-      } = payload;
+      const { key, msgBody } = payload;
       //如果该消息为自己所发送
       let converTarget = conversation[key] || [];
       if (msgBody.isBeself) {
-
         for (const key in msgBody) {
-
-          converTarget[key] = msgBody[key]
+          converTarget[key] = msgBody[key];
         }
-        state.conversation = conversation
+        state.conversation = conversation;
       } else {
         for (const key in msgBody) {
-
-          converTarget[key] = msgBody[key]
+          converTarget[key] = msgBody[key];
         }
-        state.conversation = conversation
+        state.conversation = conversation;
       }
     },
     SET_GROUPINFO: (state, data) => {
       let conversation = Object.assign({}, state.conversation);
-      let {
-        id
-      } = data;
+      let { id } = data;
       conversation[id].groupInfo = data;
       state.conversation = conversation;
-
     },
   },
   actions: {
     /* ------执行拉取会话列表数据【如获取为空则使用mock数据】------ */
-    getSessionList: async ({
-      dispatch,
-      commit
-    }, params) => {
-
+    getSessionList: async ({ dispatch, commit }, params) => {
       const regexp = /.*@easemob.com$/;
       const {
-        data: {
-          channel_infos
-        }
+        data: { channel_infos },
       } = data; //从mock中取
 
       /* 注释部分为从接口调用取会话的方法 */
@@ -77,11 +56,7 @@ const Conversation = {
           const {
             unread_num,
             channel_id,
-            meta: {
-              id,
-              timestamp,
-              payload
-            },
+            meta: { id, timestamp, payload },
           } = item; //取出会话数据
           let msgBody = Object.assign({}, JSON.parse(payload)); //转换payload数据
           let conversationObj = {
@@ -98,11 +73,11 @@ const Conversation = {
           let channelId =
             WebIM.conn.user &&
             WebIM.conn.user === msgBody.from &&
-            chatType === 'singleChat' ?
-            msgBody.to :
-            chatType === 'groupChat' ?
-            msgBody.to :
-            msgBody.from; //取相应的 会话id 主要差异在于取单聊或者群组的差异 单聊取from 或to 群组则只取to
+            chatType === 'singleChat'
+              ? msgBody.to
+              : chatType === 'groupChat'
+              ? msgBody.to
+              : msgBody.from; //取相应的 会话id 主要差异在于取单聊或者群组的差异 单聊取from 或to 群组则只取to
 
           if (chatType === 'singleChat') {
             //如果类型为单聊则放入userIdList 等待取其对应的用户属性
@@ -118,66 +93,57 @@ const Conversation = {
       let res = await dispatch('getChannelUserInfo', userIdList); //执行取对应的用户属性
       for (const key in res) {
         conversationList[key].userInfo = {
-          ...res[key]
+          ...res[key],
         };
       }
-      if (groupIdList.length != 0) dispatch('getGroupInfo', {
-        groupIdList
-      });
+      if (groupIdList.length != 0)
+        dispatch('getGroupInfo', {
+          groupIdList,
+        });
       commit('INIT_CONVERSATION_LIST', conversationList);
     },
     /* --------------------拉取会话用户属性--------------------- */
-    getChannelUserInfo: async ({
-      commit
-    }, params) => {
-      console.log('>>>>>拉取会话用户属性', params)
-      let {
-        data
-      } = await WebIM.conn.fetchUserInfoById([...params]);
+    getChannelUserInfo: async ({ commit }, params) => {
+      let { data } = await WebIM.conn.fetchUserInfoById([...params]);
       return Promise.resolve(data);
     },
     /* --------------------拉取群组详情--------------------- */
-    getGroupInfo: async ({
-      commit
-    }, params) => {
-
-      let {
-        groupIdList
-      } = params;
+    getGroupInfo: async ({ commit }, params) => {
+      let { groupIdList } = params;
       groupIdList.length > 0 &&
         groupIdList.forEach(async (item) => {
-          WebIM.conn.getGroupInfo({
-            groupId: item
-          }).then((res) => {
-            let groupInfo = res['data'][0];
-            commit('SET_GROUPINFO', groupInfo);
-          });
+          WebIM.conn
+            .getGroupInfo({
+              groupId: item,
+            })
+            .then((res) => {
+              let groupInfo = res['data'][0];
+              commit('SET_GROUPINFO', groupInfo);
+            });
         });
 
       //
     },
     /* --------------------拿到要更新的lastMsg--------------------- */
-    getToDoUpdateLastMsg: ({
-      commit
-    }, parmas) => {
-      console.log('>>>getToDoUpdateLastMsg>>', parmas)
+    getToDoUpdateLastMsg: ({ commit }, parmas) => {
+      console.log('>>>getToDoUpdateLastMsg>>', parmas);
       const myId = WebIM.conn.user;
       if (parmas.from === myId) {
-        let key = parmas.to
+        let key = parmas.to;
         commit('UPDATE_CONVERSATION_LIST', {
           key,
-          msgBody: parmas
+          msgBody: parmas,
         });
-
       } else {
-        let key = parmas.chatType === ("groupChat" || "chatRoom") ? parmas.to : parmas.from;
-        console.log('>>>>>>>>>接收他人的消息', key, parmas)
+        let key =
+          parmas.chatType === ('groupChat' || 'chatRoom')
+            ? parmas.to
+            : parmas.from;
         commit('UPDATE_CONVERSATION_LIST', {
           key,
-          msgBody: parmas
+          msgBody: parmas,
         });
       }
-
     },
   },
   getters: {

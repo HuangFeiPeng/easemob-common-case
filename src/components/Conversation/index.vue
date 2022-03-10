@@ -95,7 +95,6 @@ export default {
       const loginUserInfo = this.loginUserInfo;
       return (item) => {
         if (item.from === myId) {
-          console.log(item.from);
           return loginUserInfo.nickname
             ? loginUserInfo.nickname
             : loginUserInfo.users;
@@ -134,18 +133,23 @@ export default {
           content,
           content: { type, msg },
         } = item;
-        if (type === "txt") {
-          return msg;
-        }
-        //其他类型消息
-        if (HANDLE_MSG_TYPE[type]) {
-          return HANDLE_MSG_TYPE[type];
-        }
-        if (type === "custom" && content.customEvent === "userCard") {
-          return `[个人名片]`;
-        }
-        if (type === "custom" && content.customEvent === "transmitMsg") {
-          return `[聊天记录]`;
+        if (!item.content.recallStatus) {
+          if (type === "txt") {
+            return msg;
+          }
+          //其他类型消息
+          if (HANDLE_MSG_TYPE[type]) {
+            return HANDLE_MSG_TYPE[type];
+          }
+          //自定义类型的消息
+          if (type === "custom" && content.customEvent === "userCard") {
+            return `[个人名片]`;
+          }
+          if (type === "custom" && content.customEvent === "transmitMsg") {
+            return `[聊天记录]`;
+          }
+        } else {
+          return `撤回了一条消息`;
         }
       };
     },
