@@ -6,6 +6,7 @@
  * @Description:
  * @FilePath: /easemob-common-case/src/utils/easemob/EasemobConfig.js
  */
+/* 环信config配置文件 */
 const config = {
   socketServer: '//im-api-v2.easemob.com/ws', // socket Server地址
 

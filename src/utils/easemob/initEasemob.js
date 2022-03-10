@@ -1,8 +1,8 @@
-import websdk from 'easemob-websdk';
-import config from './EasemobConfig'
+import websdk from 'easemob-websdk'; //引入环信SDK
+import config from './EasemobConfig'; //引入Config配置文件
 let WebIM = {};
 let conn = {};
-WebIM = websdk
+WebIM = websdk;
 WebIM.config = config;
 WebIM.config = config;
 conn = WebIM.conn = new WebIM.connection({
@@ -16,7 +16,7 @@ conn = WebIM.conn = new WebIM.connection({
   autoReconnectNumMax: WebIM.config.autoReconnectNumMax,
   autoReconnectInterval: WebIM.config.autoReconnectInterval,
   delivery: WebIM.config.delivery,
-  useOwnUploadFun: WebIM.config.useOwnUploadFun
-})
+  useOwnUploadFun: WebIM.config.useOwnUploadFun,
+});
 
-export default WebIM
+export default WebIM;

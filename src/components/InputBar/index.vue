@@ -118,7 +118,7 @@ export default {
         positionMenu: true,
         selectTemplate: (item) => {
           //利用选中后的回调,把选定的id加入到被@的数组当中
- 
+
           this.atUserList.push(item.original.key);
           return `<span id="${item.original.key}" contenteditable="false"><a>
             @
@@ -137,6 +137,7 @@ export default {
     },
   },
   computed: {
+    //处理转换引用消息类型展示
     citeShowMsgType() {
       return (citeMsg) => {
         if (citeMsg.content && citeMsg.content.type === "txt") {
@@ -144,7 +145,6 @@ export default {
         } else if (citeMsg.content) {
           return `${citeMsg.from}：${HANDLE_MSG_TYPE[citeMsg.content.type]}`;
         }
-        // return citeMsg;
       };
     },
   },
